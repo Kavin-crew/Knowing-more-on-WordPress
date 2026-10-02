@@ -1,0 +1,27 @@
+# WordPress core
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/index.php
+/xmlrpc.php
+/license.txt
+/readme.html
+
+# Sensitive configuration
+/wp-config.php
+/.env
+/.env.*
+
+# Generated content
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/backup*/
+
+# Dependencies
+/node_modules/
+/vendor/
+
+# System files
+.DS_Store
+Thumbs.db
