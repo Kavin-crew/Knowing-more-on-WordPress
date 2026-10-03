@@ -1,8 +1,12 @@
 <?php
-function myfunction($name, $color)
-{
-    echo "<p>Hello, my name is $name and my favorite color is $color.</p>";
+while (have_posts()) {
+    the_post(); ?>
+    <a href="<?php the_permalink(); ?>">
+        <h2><?php the_title(); ?>
+        </h2>
+    </a>
+    <?php the_content(); ?>
+    <hr>
+    <?php
 }
-myfunction("John", "blue");
-myfunction("Mark", "red");
-myfunction("Mike", "orange");
+?>
