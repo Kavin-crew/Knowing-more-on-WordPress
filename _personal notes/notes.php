@@ -24,6 +24,30 @@ npm run dev
 echo site_url(); - returns the root url
 <li><a href="<?php echo site_url('/about-us'); ?>">About Us</a></li>
 
+<!-- returns the current page id -->
+get_the_ID()
+<!-- returns the parent page id of the current page, if any. If no parent then returns 0/false -->
+wp_get_post_parent_id(get_the_ID())
+
+<!-- returns a list of pages -->
+<!-- returns the list of pages in the form of unordered list, we can use it to create a menu for child pages. It takes arguements like child_of, title_li, sort_column, sort_order etc. -->
+wp_list_pages()
+
+<!-- If the result is 0/false, it will display it's own title -->
+<?php echo get_the_title($has_parent_page)?>;
+
+<!-- returns list of pages in memory -->
+get_pages();
+
+
+<!-- check if the current page has any child pages -->
+<?php
+    $has_children_page = get_pages(array(
+        'child_of' => get_the_ID(),
+    ));
+?>
+
+
 <!-- basic loop for posts -->
 <?php
 while (have_posts()) {

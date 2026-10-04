@@ -19,22 +19,42 @@ while (have_posts()) {
 </div>
 
 <div class="container container--narrow page-section">
-  <div class="metabox metabox--position-up metabox--with-home-link">
-    <p>
-      <a class="metabox__blog-home-link" href="#"
-        ><i class="fa fa-home" aria-hidden="true"></i> Back to About Us</a
-      >
-      <span class="metabox__main">Our History</span>
-    </p>
-  </div>
+    <?php
+    $has_parent_page = wp_get_post_parent_id(get_the_ID());
+    if ($has_parent_page) { ?>
+        <div class="metabox metabox--position-up metabox--with-home-link">
+            <p><a class="metabox__blog-home-link" href="<?php echo get_permalink($has_parent_page); ?>">
+                <i class="fa fa-home" aria-hidden="true"></i> Back to <?php echo get_the_title($has_parent_page); ?></a>
+            <span class="metabox__main"><?php the_title(); ?></span></p>
+      </div>
+   <?php } ?>
 
-  <!-- <div class="page-links">
-    <h2 class="page-links__title"><a href="#">About Us</a></h2>
-    <ul class="min-list">
-      <li class="current_page_item"><a href="#">Our History</a></li>
-      <li><a href="#">Our Goals</a></li>
-    </ul>
-  </div> -->
+   <?php
+        //check if the current page has any child pages
+        $has_children_page = get_pages(array(
+            'child_of' => get_the_ID(),
+        ));
+    ?>
+
+    <!-- if current page has a parent or child pages -->
+   <?php if ($has_parent_page or $has_children_page) { ?>
+    <div class="page-links">
+        <h2 class="page-links__title"><a href="<?php echo get_permalink($has_parent_page) ?>"><?php echo get_the_title($has_parent_page); ?></a></h2>
+        <ul class="min-list">
+        <?php
+             // get the parent page id if it exists, else get the current page id
+             $has_parent_page ? $findChildrenOfId = $has_parent_page : $findChildrenOfId = get_the_ID();
+
+       // list parent and child pages based on the parent page id
+       wp_list_pages(array(
+           'title_li' => null,
+           'child_of' => $findChildrenOfId,
+           'sort_column' => 'menu_order',
+       ));
+       ?>
+        </ul>
+    </div>
+    <?php } ?>
 
   <div class="generic-content">
     <?php the_content(); ?>
