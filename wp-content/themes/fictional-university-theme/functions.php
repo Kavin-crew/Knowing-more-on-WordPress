@@ -1,6 +1,8 @@
 <?php
 
-// function to list files to be loaded in the theme
+////////////////////////////////////
+// Load scripts, stylesheets, and fonts
+////////////////////////////////////
 function university_files()
 {
     // add the style.css to the list of files from university_files
@@ -10,6 +12,14 @@ function university_files()
     wp_enqueue_style('university_main_css', get_theme_file_uri('/build/index.css'));
     wp_enqueue_style('university_secondary_css', get_theme_file_uri('/build/style-index.css'));
 }
-
 // hook to load the files in the theme from university_files()
 add_action('wp_enqueue_scripts', 'university_files');
+
+////////////////////////////////////
+// Enable adding page title in address bar of the browser
+////////////////////////////////////
+function university_features()
+{
+    add_theme_support('title-tag');
+}
+add_action('after_setup_theme', 'university_features');

@@ -12,26 +12,32 @@ npm run dev
 <h1><?php bloginfo('name'); ?></h1>
 
 <!-- retrieve site tagline -->
-<p>
-    <?php bloginfo('description'); ?>
-</p>
+<p><?php bloginfo('description'); ?></p>
 
-<!-- basic structure of while loop using array -->
+<!-- retrieve page title -->
+<h1 class="page-banner__title"><?php the_title(); ?></h1>
+
+<!-- retrieve page content -->
+<div class="generic-content"><?php the_content(); ?></div>
+
+<!-- getting dynamic URLs -->
+echo site_url(); - returns the root url
+<li><a href="<?php echo site_url('/about-us'); ?>">About Us</a></li>
+
+<!-- basic loop for posts -->
 <?php
-$names = ['dog', 'cat', 'bird', 'fish', 'hamster', 'rabbit', 'turtle'];
-$count = 0;
+while (have_posts()) {
+    the_post(); ?>
 
-while ($count < count($names)) {
-    echo "<li>$names[$count]</li>";
-    $count++;
-}
+    <!-- implementation here -->
+<?php } ?>
 
 // lets wordpress place scripts file before the closing body tag, so we can use wp_footer() function in footer.php file
 // also helps add black admin bar on top of the page when logged in as admin
 wp_footer();
 
 // retrieve images from our theme folder, we can use get_theme_file_uri() function
-// style="background-image: url(<?php echo get_theme_file_uri('/images/library-hero.jpg'); ?-->)"
+// style="background-image: url(<!--?php echo get_theme_file_uri('/images/library-hero.jpg'); ?-->)"
 
 //////////////////////////////////////////////
 // adding script in function.php file
@@ -42,6 +48,6 @@ wp_footer();
 // 3. array of dependencies, if any. if None then null
 // 4. version number
 // 5. true or false, if load the script in footer, if false then load in header
-wp_enqueue_script('carousel_slider_js', get_theme_file_uri('/build/js/index.js'), ['jquery'], '1.0', true);
+wp_enqueue_script('carousel_slider_js', get_theme_file_uri('/build/js/index.js'), array('jquery'), '1.0', true);
 // another example
 wp_enqueue_script('carousel_slider_js', get_theme_file_uri('/build/js/index.js'), null, '1.0', true);
