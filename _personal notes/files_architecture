@@ -1,2 +1,7 @@
 single.php - for single post
 page.php - for single page
+front-page.php - homepage
+index.php - default blog post
+footer.php - footer
+header.php - header
+functions.php - control to our theme, features

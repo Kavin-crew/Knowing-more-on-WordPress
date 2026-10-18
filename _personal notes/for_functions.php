@@ -7,6 +7,8 @@ wp_enqueue_scripts - we load files css/js and so on, works as an arguement
 after_setup_theme - we can add theme support, works as an arguement
 add_theme_support(); - add theme support, works as an arguement
 
+register_nav_menu(); - register a menu,  ask for 2 arguements
+
 add_action(); - adding actions, ask for 2 arguements
 
 wp_enqueue_style(); - load css files
