@@ -32,6 +32,10 @@
         </div>
 
    <?php } ?>
+
+    <div class="pagination">
+          <?php echo paginate_links(); ?>
+     </div>
 </div>
 
 <?php get_footer();?>
