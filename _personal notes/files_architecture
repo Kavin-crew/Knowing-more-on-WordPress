@@ -4,4 +4,5 @@ front-page.php - homepage
 index.php - default blog post
 footer.php - footer
 header.php - header
+archive.php - categories, authors
 functions.php - control to our theme, features

@@ -39,6 +39,17 @@ wp_list_pages()
 <!-- returns list of pages in memory -->
 get_pages();
 
+<!-- get author, categories, and date -->
+<?php the_author_posts_link(); ?>
+<?php echo get_the_category_list(', '); ?>
+<?php the_time('n.j.y'); ?>
+
+<?php is_category(); ?> - check if the current page is a category page
+<?php is_author(); ?> - check if the current page is an author page
+<?php single_cat_title(); ?> - returns the current category title, date, author
+<?php the_archive_description(); ?> - returns the current category description, date, author
+
+
 
 <!-- check if the current page has any child pages -->
 <?php
