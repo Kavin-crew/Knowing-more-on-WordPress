@@ -49,8 +49,8 @@ get_pages();
 <?php single_cat_title(); ?> - returns the current category title, date, author
 <?php the_archive_description(); ?> - returns the current category description, date, author
 
-
-
+<?php echo wp_trim_words(get_the_content(), 18); ?> - returns the first 18 words of the content
+<?php wp_reset_postdata(); ?> - resets the post data after a custom query loop, so that the main query loop can work properly
 <!-- check if the current page has any child pages -->
 <?php
     $has_children_page = get_pages(array(
