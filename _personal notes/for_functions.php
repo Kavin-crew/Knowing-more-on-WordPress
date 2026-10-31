@@ -21,19 +21,15 @@ add_action();
 // load css files
 wp_enqueue_style();
 
-
 // retrieve the default style.css file in our theme
 get_stylesheet_uri();
-
 
 // load js files
 wp_enqueue_script();
 
 
-
 // retrieve the file from the theme folder, works as an arguement
 get_theme_file_uri('/build/style-index.css')
-
 
 // retrieve the file from external source
 wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
