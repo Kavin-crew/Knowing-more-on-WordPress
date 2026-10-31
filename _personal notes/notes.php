@@ -52,7 +52,23 @@ get_pages();
 <?php echo wp_trim_words(get_the_content(), 18); ?> - returns the first 18 words of the content
 <?php wp_reset_postdata(); ?> - resets the post data after a custom query loop, so that the main query loop can work properly
 
-<?php get_post_type_archive_link('event'); ?> - dynamic way to get the link of a CPT
+<?php echo get_post_type_archive_link('event'); ?> - dynamic way to get the link of a CPT
+
+<?php if (get_post_type() == 'event') {
+    echo 'class="current-menu-item';
+} ?> - active on menu
+
+<!-- ACF -->
+ -returns First 3 letters of the month from a datepicker custom field
+ <?php
+$eventMonth = new DateTime(get_field('event_date'));
+echo $eventMonth->format('M'); ?>
+
+ -returns date from a datepicker custom field
+ <?php
+$eventDate = new DateTime(get_field('event_date'));
+echo $eventDate->format('d'); ?>
+
 
 
 <!-- check if the current page has any child pages -->
