@@ -16,10 +16,28 @@
         <h2 class="headline headline--small-plus t-center">Upcoming Events</h2>
 
         <?php
-            $recentEvents = new WP_Query(array(
-                'posts_per_page' => 2,
-                'post_type' => 'event',
-            ));
+$today = date('Ymd');
+$recentEvents = new WP_Query(array(
+    // 'posts_per_page' => -1, -1 means display all
+    'posts_per_page' => -1,
+    'post_type' => 'event',
+    // 'order'=> 'DESC', DESC is default
+    'order' => 'ASC',
+    // for custom field, we need to use meta_query
+    'meta_key' => 'event_date',
+    // 'orderby'=> 'meta_value_num', meta_value is a string, meta_value_num is a number
+    'orderby' => 'meta_value_num',
+    'meta_query' => array(
+        array(
+            // this means we are going to compare the value of the custom field with the current date, and only show the events that are in the future
+            'key' => 'event_date',
+            'compare' => '>=',
+            'value' => $today,
+            // numeric is optional, since were comparing dates
+            'type' => 'numeric',
+        ),
+    ),
+));
 
 while ($recentEvents->have_posts()) {
     $recentEvents->the_post(); ?>

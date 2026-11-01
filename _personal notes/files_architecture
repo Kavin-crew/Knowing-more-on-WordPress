@@ -1,8 +1,10 @@
 single.php - for single post
+single-posttype - single post type, ex. single-event
 page.php - for single page
 front-page.php - homepage
-index.php - default blog post
+index.php - default blog post, default template once certain file is not available.
 footer.php - footer
 header.php - header
 archive.php - categories, authors
+archive-posttype - ex. archive-event for event post type
 functions.php - control to our theme, features

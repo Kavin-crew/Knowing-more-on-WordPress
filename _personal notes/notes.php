@@ -106,3 +106,34 @@ wp_footer();
 wp_enqueue_script('carousel_slider_js', get_theme_file_uri('/build/js/index.js'), array('jquery'), '1.0', true);
 // another example
 wp_enqueue_script('carousel_slider_js', get_theme_file_uri('/build/js/index.js'), null, '1.0', true);
+
+
+//////////////////////////////////////////////
+// Custom query for CPT
+// displaying events in ascending order based on the event date
+// display only future events, not past events
+//////////////////////////////////////////////
+
+<?php
+$today = date('Ymd');
+$recentEvents = new WP_Query(array(
+    // 'posts_per_page' => -1, -1 means display all
+    'posts_per_page' => 2,
+    'post_type' => 'event',
+    // 'order'=> 'DESC', DESC is default
+    'order' => 'ASC',
+    // for custom field, we need to use meta_query
+    'meta_key' => 'event_date',
+    // 'orderby'=> 'meta_value_num', meta_value is a string, meta_value_num is a number
+    'orderby' => 'meta_value_num',
+    'meta_query' => array(
+        array(
+            // this means we are going to compare the value of the custom field with the current date, and only show the events that are in the future
+            'key' => 'event_date',
+            'compare' => '>=',
+            'value' => $today,
+            // numeric is optional, since were comparing dates
+            'type' => 'numeric',
+        ),
+    ),
+));
