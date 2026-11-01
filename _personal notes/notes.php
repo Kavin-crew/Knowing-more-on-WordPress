@@ -137,3 +137,20 @@ $recentEvents = new WP_Query(array(
         ),
     ),
 ));
+
+//////////////////////////////////////////////
+// Displaying a cpt's related programs on the single event page
+// using ACF relationship field
+// ex. one event have a relationship with multiple programs
+// and we want to display those programs on the single event page
+//////////////////////////////////////////////
+
+$relatedPrograms = get_field('related_programs');
+if ($relatedPrograms) {
+    foreach ($relatedPrograms as $program) { ?>
+        <li>
+            <a href="<?php echo get_the_permalink($program); ?>"><?php echo get_the_title($program); ?></a>
+        </li>   
+    <?php } ?>
+<?php }
+?>
