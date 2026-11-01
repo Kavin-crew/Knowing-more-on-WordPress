@@ -1,6 +1,7 @@
 single.php - for single post
 single-posttype - single post type, ex. single-event
 page.php - for single page
+page-past-events - page + slug of a certain page you want have its own template
 front-page.php - homepage
 index.php - default blog post, default template once certain file is not available.
 footer.php - footer
