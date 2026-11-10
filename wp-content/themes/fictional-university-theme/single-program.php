@@ -27,6 +27,41 @@ while (have_posts()) {
 
     <div class="generic-content"><?php the_content(); ?></div>
     <?php
+
+    /////////////////////////////////////////
+    // Query for professors
+    /////////////////////////////////////////
+    $relatedProfessors = new WP_Query(array(
+        'post_per_page' => -1,
+        'post_type' => 'professor',
+        'order' => 'ASC',
+        'orderby' => 'title',
+        'meta_query' => array(
+            array(
+                'key' => 'related_programs',
+                'compare' => 'LIKE',
+                'value' => '"' . get_the_ID() . '"',
+            ),
+        ),
+    ));
+
+    if ($relatedProfessors->have_posts()) {
+        echo '<hr class="section-break">';
+        echo '<h2 class="headline headline--medium">' . get_the_title() . ' Professors</h2>';
+        echo '<ul class="professor-cards">';
+        while ($relatedProfessors->have_posts()) {
+            $relatedProfessors->the_post(); ?>
+            <li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
+
+   <?php }
+        echo '</ul>';
+        ?>
+    <?php }
+    wp_reset_postdata(); // reset the global $post variable to the current post in the main query
+
+    /////////////////////////////////////////
+    // Query for events
+    /////////////////////////////////////////
     $today = date('Ymd');
     $recentEvents = new WP_Query(array(
         'post_type' => 'event',
