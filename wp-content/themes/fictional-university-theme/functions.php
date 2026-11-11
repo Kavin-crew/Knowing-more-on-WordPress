@@ -1,5 +1,8 @@
 <?php
 
+////////////////////////////////////
+// Reusable page banner function
+////////////////////////////////////
 function pageBanner($args = null)
 {
     // if the title is not set, then use page title

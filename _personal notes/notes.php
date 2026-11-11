@@ -176,3 +176,22 @@ register_post_type('professor', array(
 ));
 
 ?>
+
+<?php
+//////////////////////////////////////////////
+// making a reusable template part
+//////////////////////////////////////////////
+
+// create a folder named template-parts in the theme folder
+// and create a file named event.php for example
+// it ask for arguements, we can pass the post type name as an argument
+// 2nd arguement is optional
+get_template_part('template-parts/event');
+
+// another example, we can pass the post type name as an argument
+// so it will look for a file named content-{post_type}.php in the template-parts folder
+// example, if the post type is 'event'
+// it will look for a file named content-event.php in the template-parts folder
+// so like, content-professor.php, content-program.php, content-campus.php, content-event.php etc.
+get_template_part('template-parts/content', get_post_type());
+?>
