@@ -20,7 +20,8 @@ add_theme_support('title-tag');
 add_theme_support('post-thumbnails');
 
 // add new image size, works as an arguement
-add_image_size();
+add_image_size('professorLandscape', 400, 260, true);
+add_image_size('professorPortait', 480, 650, true);
 
 
 // register a menu,  ask for 2 arguements
