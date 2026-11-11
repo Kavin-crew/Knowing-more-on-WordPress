@@ -70,6 +70,9 @@ $eventDate = new DateTime(get_field('event_date'));
 echo $eventDate->format('d'); ?>
 
 
+<!-- images -->
+ returns the image url of the featured image of the post, and we can pass the image size as an arguement
+ <?php the_post_thumbnail_url(); ?>
 
 <!-- check if the current page has any child pages -->
 <?php
@@ -153,4 +156,23 @@ if ($relatedPrograms) {
         </li>   
     <?php } ?>
 <?php }
+?>
+
+<?php
+//////////////////////////////////////////////
+// Enable featured image to custom post type
+//////////////////////////////////////////////
+
+// in functions.php
+function university_features()
+{
+    add_theme_support('post-thumbnails');
+}
+
+// in custom-post-types.php
+// professor post type
+register_post_type('professor', array(
+    'supports' => array('title','editor', 'thumbnail'),
+));
+
 ?>

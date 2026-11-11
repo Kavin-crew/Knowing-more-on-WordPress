@@ -12,6 +12,17 @@ after_setup_theme();
 // add theme support, works as an arguement
 add_theme_support();
 
+
+// enable title tag in the address bar of the browser
+add_theme_support('title-tag');
+
+// enable adding featured image to posts
+add_theme_support('post-thumbnails');
+
+// add new image size, works as an arguement
+add_image_size();
+
+
 // register a menu,  ask for 2 arguements
 register_nav_menu();
 
