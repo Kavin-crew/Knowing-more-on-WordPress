@@ -2,21 +2,9 @@
 get_header();
 
 while (have_posts()) {
-    the_post(); ?>
-
-<div class="page-banner">
-    <div
-        class="page-banner__bg-image"
-        style="
-        background-image: url(<?php echo get_theme_file_uri('/images/ocean.jpg')?>);">
-    </div>
-    <div class="page-banner__content container container--narrow">
-        <h1 class="page-banner__title"><?php the_title(); ?></h1>
-        <div class="page-banner__intro">
-        <p>Sub-title here...</p>
-        </div>
-    </div>
-</div>
+    the_post();
+    pageBanner();
+    ?>
 
 <div class="container container--narrow page-section">
 
@@ -31,7 +19,7 @@ while (have_posts()) {
         </div>
     </div>
     <?php
-    $relatedPrograms = get_field('related_programs');
+        $relatedPrograms = get_field('related_programs');
     if ($relatedPrograms) {
         echo '<hr class="section-break">';
         echo '<h2 class="headline headline--small">Subject Areas</h2>';
