@@ -50,6 +50,10 @@ function university_files()
     wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
     wp_enqueue_style('university_main_css', get_theme_file_uri('/build/index.css'));
     wp_enqueue_style('university_secondary_css', get_theme_file_uri('/build/style-index.css'));
+
+    // leaflet
+    wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
+    wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array('jquery'), '1.9.4', true);
 }
 // hook to load the files in the theme from university_files()
 add_action('wp_enqueue_scripts', 'university_files');
@@ -61,9 +65,11 @@ function university_features()
 {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
+
     add_image_size('professorLandscape', 400, 260, true);
     add_image_size('professorPortait', 480, 650, true);
     add_image_size('pageBanner', 1500, 350, true);
+
     register_nav_menu('HeaderMenuLocation', 'Header Menu');
     register_nav_menu('FooterExploreMenuLocation', 'Footer Explore Menu');
     register_nav_menu('FooterLearnMenuLocation', 'Footer Learn Menu');
@@ -94,3 +100,336 @@ function university_adjust_queries($query)
     }
 }
 add_action('pre_get_posts', 'university_adjust_queries');
+
+////////////////////////////////////
+// Leaflet metabox
+////////////////////////////////////
+function add_location_map_metabox()
+{
+    add_meta_box(
+        'location_map_picker',
+        'Select Location on Map',
+        'location_map_metabox_callback',
+        'location',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'add_location_map_metabox');
+
+function location_map_metabox_callback()
+{
+    ?>
+    <div id="location-admin-map"
+         style="height: 400px; width: 100%;">
+    </div>
+
+    <p>
+        Click on the map or drag the marker to select
+        your location.
+    </p>
+    <?php
+}
+
+function admin_leaflet_assets($hook)
+{
+    $screen = get_current_screen();
+
+    if (!$screen || $screen->post_type !== 'location') {
+        return;
+    }
+
+    wp_enqueue_style(
+        'leaflet-admin-css',
+        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+        array(),
+        '1.9.4'
+    );
+
+    wp_enqueue_script(
+        'leaflet-admin-js',
+        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+        array('jquery'),
+        '1.9.4',
+        true
+    );
+
+    $script = <<<'JS'
+jQuery(function($) {
+
+    var mapElement = document.getElementById('location-admin-map');
+
+    if (!mapElement || typeof L === 'undefined') return;
+
+    var latInput = $('.acf-field[data-name="location_latitude"] input');
+    var lngInput = $('.acf-field[data-name="location_longitude"] input');
+    var addressInput = $('.acf-field[data-name="location_address"] input');
+
+    var lat = parseFloat(latInput.val());
+    var lng = parseFloat(lngInput.val());
+
+    var hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
+
+    var initialPosition = hasCoordinates
+        ? [lat, lng]
+        : [10.3157, 123.8854];
+
+    var initialZoom = hasCoordinates ? 15 : 13;
+
+    var map = L.map('location-admin-map').setView(
+        initialPosition,
+        initialZoom
+    );
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var marker = null;
+    var addressTimer = null;
+    var requestController = null;
+    var requestId = 0;
+
+    function updateCoordinates(position) {
+
+        latInput.val(position.lat.toFixed(6)).trigger('change');
+        lngInput.val(position.lng.toFixed(6)).trigger('change');
+
+    }
+
+    function getAddress(position) {
+
+        clearTimeout(addressTimer);
+
+        if (requestController) {
+            requestController.abort();
+        }
+
+        var currentRequest = ++requestId;
+
+        addressInput.val('Retrieving address...').trigger('change');
+
+        addressTimer = setTimeout(function() {
+
+            requestController = new AbortController();
+
+            var params = new URLSearchParams({
+                format: 'jsonv2',
+                lat: position.lat,
+                lon: position.lng,
+                addressdetails: 1,
+                'accept-language': 'en'
+            });
+
+            fetch(
+                'https://nominatim.openstreetmap.org/reverse?' + params.toString(),
+                {
+                    signal: requestController.signal,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }
+            )
+            .then(function(response) {
+
+                if (!response.ok) {
+                    throw new Error('Unable to retrieve address.');
+                }
+
+                return response.json();
+
+            })
+            .then(function(data) {
+
+                if (currentRequest !== requestId) return;
+
+                if (data.display_name) {
+
+                    addressInput
+                        .val(data.display_name)
+                        .trigger('change');
+
+                } else {
+
+                    addressInput.val('').trigger('change');
+
+                    alert('No address found for this location.');
+
+                }
+
+            })
+            .catch(function(error) {
+
+                if (error.name === 'AbortError') return;
+
+                if (currentRequest !== requestId) return;
+
+                console.error('Reverse geocoding error:', error);
+
+                addressInput.val('').trigger('change');
+
+                alert('Unable to retrieve the address. Please try again.');
+
+            });
+
+        }, 1100);
+
+    }
+
+    function placeMarker(position) {
+
+        if (marker) {
+
+            marker.setLatLng(position);
+
+        } else {
+
+            marker = L.marker(position, {
+                draggable: true
+            }).addTo(map);
+
+            marker.on('dragend', function() {
+
+                var newPosition = marker.getLatLng();
+
+                updateCoordinates(newPosition);
+                getAddress(newPosition);
+
+            });
+
+        }
+
+        updateCoordinates(position);
+        getAddress(position);
+
+    }
+
+    if (hasCoordinates) {
+
+        placeMarker({
+            lat: lat,
+            lng: lng
+        });
+
+    }
+
+    map.on('click', function(event) {
+
+        placeMarker(event.latlng);
+
+    });
+
+    setTimeout(function() {
+        map.invalidateSize();
+    }, 300);
+
+});
+JS;
+
+    wp_add_inline_script('leaflet-admin-js', $script);
+}
+add_action('admin_enqueue_scripts', 'admin_leaflet_assets');
+
+function location_map_data()
+{
+    if (!is_post_type_archive('location')) {
+        return;
+    }
+
+    $locations = get_posts(array(
+        'post_type' => 'location',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+    ));
+
+    $map_data = array();
+
+    foreach ($locations as $location) {
+        $lat = get_field('location_latitude', $location->ID);
+        $lng = get_field('location_longitude', $location->ID);
+
+        if ($lat === '' || $lat === false ||
+            $lng === '' || $lng === false ||
+            !is_numeric($lat) || !is_numeric($lng)) {
+            continue;
+        }
+
+        $map_data[] = array(
+            'title' => get_the_title($location->ID),
+            'lat' => (float) $lat,
+            'lng' => (float) $lng,
+            'address' => get_field('location_address', $location->ID),
+            'url' => get_permalink($location->ID),
+        );
+    }
+
+    wp_localize_script(
+        'leaflet-js',
+        'locationMapData',
+        $map_data
+    );
+
+    $script = "
+    document.addEventListener('DOMContentLoaded', function() {
+
+        var mapElement = document.getElementById('locations-map');
+
+        if (!mapElement || typeof L === 'undefined') return;
+
+        var locations = window.locationMapData || [];
+
+        var defaultCenter = [20, 0];
+
+        var map = L.map('locations-map').setView(defaultCenter, 2);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var bounds = [];
+
+        locations.forEach(function(location) {
+
+            var marker = L.marker([
+                location.lat,
+                location.lng
+            ]).addTo(map);
+
+            var popup = '<strong>' +
+                document.createTextNode(location.title).textContent +
+                '</strong>';
+
+            if (location.address) {
+                popup += '<br>' +
+                    document.createTextNode(location.address).textContent;
+            }
+
+            popup += '<br><a href=\"' +
+                location.url.replace(/&/g, '&amp;').replace(/\"/g, '&quot;') +
+                '\">View Location</a>';
+
+            marker.bindPopup(popup);
+
+            bounds.push([
+                location.lat,
+                location.lng
+            ]);
+
+        });
+
+        if (bounds.length === 1) {
+            map.setView(bounds[0], 14);
+        } else if (bounds.length > 1) {
+            map.fitBounds(bounds, {
+                padding: [40, 40]
+            });
+        }
+
+    });
+    ";
+
+    wp_add_inline_script('leaflet-js', $script);
+}
+add_action('wp_enqueue_scripts', 'location_map_data', 20);

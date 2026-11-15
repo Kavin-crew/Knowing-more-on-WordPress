@@ -57,5 +57,24 @@ function university_post_types()
         ),
         'menu_icon' => 'dashicons-groups',
     ));
+
+    // campus/location post type
+    register_post_type('location', array(
+        'public' => true,
+        'show_in_rest' => true,
+        'supports' => array('title','editor','excerpt','thumbnail'),
+        'rewrite' => array(
+            'slug' => 'locations',
+        ),
+        'has_archive' => true,
+        'labels' => array(
+            'name' => 'Locations',
+            'add_new_item' => 'Add New Location',
+            'edit_item' => 'Edit Location',
+            'all_items' => 'All Locations',
+            'singular_name' => 'Location',
+        ),
+        'menu_icon' => 'dashicons-location-alt',
+    ));
 }
 add_action('init', 'university_post_types');

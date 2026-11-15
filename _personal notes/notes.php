@@ -195,3 +195,11 @@ get_template_part('template-parts/event');
 // so like, content-professor.php, content-program.php, content-campus.php, content-event.php etc.
 get_template_part('template-parts/content', get_post_type());
 ?>
+
+<?php
+//////////////////////////////////////////////
+// Leaflet
+// https://chatgpt.com/share/6af8fb8f-c5f4-83ec-a03e-69e5c895cfd4
+//////////////////////////////////////////////
+?>
+
