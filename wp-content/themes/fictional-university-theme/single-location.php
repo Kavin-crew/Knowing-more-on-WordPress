@@ -15,6 +15,11 @@ while (have_posts()) :
     ?>
 
 <div class="container container--narrow page-section">
+    <div class="metabox metabox--position-up metabox--with-home-link">
+        <p><a class="metabox__blog-home-link" href="<?php echo get_post_type_archive_link('location'); ?>">
+            <i class="fa fa-map-marker" aria-hidden="true"></i> All Locations</a>
+        <span class="metabox__main"><?php the_title(); ?></span></p>
+    </div>
 
         <?php if ($address) : ?>
             <p><?php echo esc_html($address); ?></p>
@@ -64,9 +69,36 @@ while (have_posts()) :
         <?php else : ?>
             <p>Location coordinates are not available.</p>
         <?php endif; ?>
+
+        <?php $relatedPrograms = new WP_Query(array(
+        'post_per_page' => -1,
+        'post_type' => 'program',
+        'order' => 'ASC',
+        'orderby' => 'title',
+        'meta_query' => array(
+            array(
+                'key' => 'related_campus',
+                'compare' => 'LIKE',
+                'value' => '"' . get_the_ID() . '"',
+            ),
+        ),
+    ));
+
+    if ($relatedPrograms->have_posts()) {
+        echo '<hr class="section-break">';
+        echo '<h2 class="headline headline--medium">Programs available at ' . get_the_title() . '</h2>';
+        echo '<ul class="min-list link-list">';
+        while ($relatedPrograms->have_posts()) {
+            $relatedPrograms->the_post(); ?>
+            <li>
+                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+            </li>
+
+    <?php } echo '</ul>';?>
+    <?php } ?>
 </div>
-<?php
-endwhile;
+
+<?php endwhile;
 
 get_footer();
 ?>

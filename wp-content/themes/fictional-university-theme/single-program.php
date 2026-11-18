@@ -9,7 +9,7 @@ while (have_posts()) {
 <div class="container container--narrow page-section">
     <div class="metabox metabox--position-up metabox--with-home-link">
         <p><a class="metabox__blog-home-link" href="<?php echo get_post_type_archive_link('program'); ?>">
-            <i class="fa fa-home" aria-hidden="true"></i> All Programs</a>
+            <i class="fa fa-graduation-cap" aria-hidden="true"></i> All Programs</a>
         <span class="metabox__main"><?php the_title(); ?></span></p>
     </div>
 
@@ -50,7 +50,8 @@ while (have_posts()) {
         echo '</ul>';
         ?>
     <?php }
-    wp_reset_postdata(); // reset the global $post variable to the current post in the main query
+    // reset the global $post variable to the current post in the main query
+    wp_reset_postdata(); 
 
     /////////////////////////////////////////
     // Query for events
@@ -84,7 +85,28 @@ while (have_posts()) {
             $recentEvents->the_post();
             get_template_part('template-parts/content', 'event');
         } ?>
-    <?php } ?>
+    <?php } 
+    wp_reset_postdata();
+
+    /////////////////////////////////////////
+    // related campuses
+    /////////////////////////////////////////
+
+    // since we're on the single program page, we can use ACF function get_field() to get the related campuses
+    // no need to use WP_Query since campuses have relationship field to programs
+    $relatedCampuses = get_field('related_campus');
+
+    if ($relatedCampuses) {
+        echo '<hr class="section-break">';
+        echo '<h2 class="headline headline--medium">' . get_the_title() . ' is Available At These Campuses:</h2>';
+        echo '<ul class="min-list link-list">';
+        foreach($relatedCampuses as $campus) {
+        ?> <li><a href="<?php echo get_the_permalink($campus); ?>"><?php echo get_the_title($campus) ?></a></li> <?php
+        }
+        echo '</ul>';
+        ?>
+    <?php } 
+    ?>
 </div>
 
 <?php }

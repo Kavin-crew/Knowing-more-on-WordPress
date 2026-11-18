@@ -98,6 +98,10 @@ function university_adjust_queries($query)
         $query->set('order', 'ASC');
         $query->set('post_per_page', -1);
     }
+
+    if (!is_admin() && is_post_type_archive('location') && $query->is_main_query()) {
+        $query->set('post_per_page', -1);
+    }
 }
 add_action('pre_get_posts', 'university_adjust_queries');
 
@@ -120,42 +124,23 @@ add_action('add_meta_boxes', 'add_location_map_metabox');
 function location_map_metabox_callback()
 {
     ?>
-    <div id="location-admin-map"
-         style="height: 400px; width: 100%;">
-    </div>
-
-    <p>
-        Click on the map or drag the marker to select
-        your location.
-    </p>
+    <div id="location-admin-map" style="height: 400px; width: 100%;"></div>
+    <p>Click on the map or drag the marker to select your location.</p>
     <?php
 }
 
 function admin_leaflet_assets($hook)
 {
     $screen = get_current_screen();
-
     if (!$screen || $screen->post_type !== 'location') {
         return;
     }
 
-    wp_enqueue_style(
-        'leaflet-admin-css',
-        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-        array(),
-        '1.9.4'
-    );
-
-    wp_enqueue_script(
-        'leaflet-admin-js',
-        'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-        array('jquery'),
-        '1.9.4',
-        true
-    );
+    wp_enqueue_style('leaflet-admin-css','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',array(),'1.9.4');
+    wp_enqueue_script('leaflet-admin-js','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',array('jquery'),'1.9.4',true);
 
     $script = <<<'JS'
-jQuery(function($) {
+    jQuery(function($) {
 
     var mapElement = document.getElementById('location-admin-map');
 
@@ -192,16 +177,12 @@ jQuery(function($) {
     var requestId = 0;
 
     function updateCoordinates(position) {
-
         latInput.val(position.lat.toFixed(6)).trigger('change');
         lngInput.val(position.lng.toFixed(6)).trigger('change');
-
     }
 
     function getAddress(position) {
-
         clearTimeout(addressTimer);
-
         if (requestController) {
             requestController.abort();
         }
@@ -278,46 +259,32 @@ jQuery(function($) {
     }
 
     function placeMarker(position) {
-
         if (marker) {
-
             marker.setLatLng(position);
-
         } else {
-
             marker = L.marker(position, {
                 draggable: true
             }).addTo(map);
 
             marker.on('dragend', function() {
-
                 var newPosition = marker.getLatLng();
-
                 updateCoordinates(newPosition);
                 getAddress(newPosition);
-
             });
-
         }
-
         updateCoordinates(position);
         getAddress(position);
-
     }
 
     if (hasCoordinates) {
-
         placeMarker({
             lat: lat,
             lng: lng
         });
-
     }
 
     map.on('click', function(event) {
-
         placeMarker(event.latlng);
-
     });
 
     setTimeout(function() {
@@ -370,7 +337,7 @@ function location_map_data()
         $map_data
     );
 
-    $script = "
+    $script = <<<'JS'
     document.addEventListener('DOMContentLoaded', function() {
 
         var mapElement = document.getElementById('locations-map');
@@ -428,7 +395,7 @@ function location_map_data()
         }
 
     });
-    ";
+    JS;
 
     wp_add_inline_script('leaflet-js', $script);
 }
