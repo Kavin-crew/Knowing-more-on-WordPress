@@ -12,15 +12,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _css_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../css/style.scss */ "./css/style.scss");
 /* harmony import */ var _modules_MobileMenu__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/MobileMenu */ "./src/modules/MobileMenu.js");
 /* harmony import */ var _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/HeroSlider */ "./src/modules/HeroSlider.js");
+/* harmony import */ var _modules_Search__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/Search */ "./src/modules/Search.js");
 
 
 // Our modules / classes
 
 
 
+
 // Instantiate a new object using our modules/classes
 const mobileMenu = new _modules_MobileMenu__WEBPACK_IMPORTED_MODULE_1__["default"]();
 const heroSlider = new _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__["default"]();
+const search = new _modules_Search__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
 /***/ },
 
@@ -91,6 +94,43 @@ class MobileMenu {
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MobileMenu);
+
+/***/ },
+
+/***/ "./src/modules/Search.js"
+/*!*******************************!*\
+  !*** ./src/modules/Search.js ***!
+  \*******************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+class Search {
+  // 1. Properties
+  constructor() {
+    this.openButton = document.querySelector('.search-trigger');
+    this.closeButton = document.querySelector('.search-overlay__close');
+    this.searchOverlay = document.querySelector('.search-overlay');
+    this.events();
+  }
+
+  // 2. Events
+  events() {
+    this.openButton.addEventListener('click', () => this.openOverlay());
+    this.closeButton.addEventListener('click', () => this.closeOverlay());
+  }
+
+  // 3. Methods
+  openOverlay() {
+    this.searchOverlay.classList.add('search-overlay--active');
+  }
+  closeOverlay() {
+    this.searchOverlay.classList.remove('search-overlay--active');
+  }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);
 
 /***/ },
 
