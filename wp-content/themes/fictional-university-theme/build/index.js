@@ -113,8 +113,9 @@ class Search {
     this.openButton = document.querySelector('.search-trigger');
     this.closeButton = document.querySelector('.search-overlay__close');
     this.searchOverlay = document.querySelector('.search-overlay');
-    this.searchInput = document.querySelector('.search-term');
+    this.searchField = document.getElementById('search-term');
     this.isOverlayOpen = false;
+    this.typingTimer;
     this.events();
   }
 
@@ -137,22 +138,29 @@ class Search {
         this.closeOverlay();
       }
     });
+    this.searchField.addEventListener('keydown', e => {
+      this.typingLogic();
+    });
   }
 
   // 3. Methods
+  typingLogic() {
+    clearTimeout(this.typingTimer);
+    this.typingTimer = setTimeout(function () {
+      console.log('typing ends on 2 sec');
+    }, 2000);
+  }
   openOverlay() {
     this.searchOverlay.classList.add('search-overlay--active');
     document.body.classList.add('body-no-scroll');
     this.isOverlayOpen = true;
-    this.searchInput.focus();
-    console.log('open');
+    this.searchField.focus();
   }
   closeOverlay() {
     this.searchOverlay.classList.remove('search-overlay--active');
-    this.searchInput.value = '';
+    this.searchField.value = '';
     document.body.classList.remove('body-no-scroll');
     this.isOverlayOpen = false;
-    console.log('close');
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);
