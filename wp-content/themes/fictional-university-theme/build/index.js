@@ -114,7 +114,10 @@ class Search {
     this.closeButton = document.querySelector('.search-overlay__close');
     this.searchOverlay = document.querySelector('.search-overlay');
     this.searchField = document.getElementById('search-term');
+    this.resultsDiv = document.getElementById('search-overlay__results');
     this.isOverlayOpen = false;
+    this.isSpinnerVisible = false;
+    this.previousSeachedValue;
     this.typingTimer;
     this.events();
   }
@@ -138,17 +141,43 @@ class Search {
         this.closeOverlay();
       }
     });
-    this.searchField.addEventListener('keydown', e => {
+    this.searchField.addEventListener('keyup', e => {
       this.typingLogic();
     });
   }
 
   // 3. Methods
   typingLogic() {
-    clearTimeout(this.typingTimer);
-    this.typingTimer = setTimeout(function () {
-      console.log('typing ends on 2 sec');
-    }, 2000);
+    // check search input value is the the same on previous typed searched value, this matters when user uses arrow keys, tab, and so on other than letters
+    if (this.searchField.value != this.previousSeachedValue) {
+      // resets timer, to only have 1 timer at time
+      clearTimeout(this.typingTimer);
+
+      // check search input empty or users delete the searched value or hit backspace
+      if (this.searchField.value) {
+        if (!this.isSpinnerVisible) {
+          this.resultsDiv.innerHTML = '<div class="spinner-loader"></div>';
+          this.isSpinnerVisible = true;
+        }
+        // set timer after 2sec to get result and set previous typed searched value to a variable, this will help us when users press arrow keys and so on
+        this.typingTimer = setTimeout(() => {
+          this.getReults();
+          this.previousSeachedValue = this.searchField.value;
+        }, 2000);
+      } else {
+        this.resultsDiv.innerHTML = '';
+        this.isSpinnerVisible = false;
+      }
+    }
+  }
+  getReults() {
+    this.resultsDiv.innerHTML = `
+        <div class="search-result">
+            <h3>Test Result</h3>
+            <p>Some description here.</p>
+        </div>
+    `;
+    this.isSpinnerVisible = false;
   }
   openOverlay() {
     this.searchOverlay.classList.add('search-overlay--active');
