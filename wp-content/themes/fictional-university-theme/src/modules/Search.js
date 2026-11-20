@@ -1,6 +1,7 @@
 class Search {
     // 1. Properties
     constructor() {
+        this.addSearchHTML();
         this.openButton = document.querySelector('.search-trigger');
         this.closeButton = document.querySelector('.search-overlay__close');
         this.searchOverlay = document.querySelector('.search-overlay');
@@ -57,7 +58,7 @@ class Search {
                 this.typingTimer = setTimeout(() => {
                     this.getReults();
                     this.previousSeachedValue = this.searchField.value;
-                }, 2000);
+                }, 750);
             } else {
                 this.resultsDiv.innerHTML = '';
                 this.isSpinnerVisible = false;
@@ -70,7 +71,8 @@ class Search {
 
         try {
             const response = await fetch(
-                `http://localhost:3000/wp-json/wp/v2/location?search=${encodeURIComponent(searchedValue)}`,
+                universityData.root_url +
+                    `/wp-json/wp/v2/posts?search=${encodeURIComponent(searchedValue)}`,
             );
             const data = await response.json();
             if (data.length) {
@@ -80,6 +82,11 @@ class Search {
                     ${data.map((item) => `<li><a href="${item.link}">${item.title.rendered}</a></li>`).join('')}
                 </ul>
             `;
+            } else {
+                this.resultsDiv.innerHTML = `
+                <h2 class="search-overlay__section-title">General Information</h2>
+                <p>No general information matches that search.</p>
+                `;
             }
         } catch (error) {
             console.error(error);
@@ -91,8 +98,9 @@ class Search {
     openOverlay() {
         this.searchOverlay.classList.add('search-overlay--active');
         document.body.classList.add('body-no-scroll');
+        this.searchField.value = '';
+        setTimeout(() => this.searchField.focus(), 301);
         this.isOverlayOpen = true;
-        this.searchField.focus();
     }
 
     closeOverlay() {
@@ -100,6 +108,26 @@ class Search {
         this.searchField.value = '';
         document.body.classList.remove('body-no-scroll');
         this.isOverlayOpen = false;
+    }
+
+    addSearchHTML() {
+        document.body.insertAdjacentHTML(
+            'beforeend',
+            `
+            <div class="search-overlay">
+                <div class="search-overlay__top">
+                    <div class="container">
+                        <i class="fa fa-search search-overlay__icon" aria-hidden="true"></i>
+                        <input type="text" class="search-term" placeholder="What are you looking for?" id="search-term">
+                        <i class="fa fa-window-close search-overlay__close" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div id="search-overlay__results"></div>
+                </div>
+            </div>`,
+        );
     }
 }
 

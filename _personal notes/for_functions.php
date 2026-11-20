@@ -46,6 +46,19 @@ get_theme_file_uri('/build/style-index.css')
 // retrieve the file from external source
 wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
+// main aim is to attached php data to that script
+// ask for 3 arguments
+// 1. handle - Identifies the enqueued JavaScript file
+// 2. Name of the JavaScript object to create, can use any name we want
+// 3. PHP array containing the data to pass
+wp_localize_script('main-university-js', 'universityData', array(
+    'root_url'=> get_site_url()
+));
+// to verify the object that was created, view page source of site
+// go to bottom and look for a variable declaration like below
+// <script id="main-university-js-js-extra">
+// var universityData = {"root_url":"//localhost:3000"};
+// </script>
 
 ////////////////////////////////////
 // Add new CPT
