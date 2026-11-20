@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 class Search {
     // 1. Properties
     constructor() {
@@ -56,7 +58,7 @@ class Search {
                 }
                 // set timer after 2sec to get result and set previous typed searched value to a variable, this will help us when users press arrow keys and so on
                 this.typingTimer = setTimeout(() => {
-                    this.getReults();
+                    this.getResults();
                     this.previousSeachedValue = this.searchField.value;
                 }, 750);
             } else {
@@ -66,33 +68,25 @@ class Search {
         }
     }
 
-    async getReults() {
-        const searchedValue = this.searchField.value;
+    getResults() {
+        const searchTerm = this.searchField.value;
 
-        try {
-            const response = await fetch(
-                universityData.root_url +
-                    `/wp-json/wp/v2/posts?search=${encodeURIComponent(searchedValue)}`,
-            );
-            const data = await response.json();
-            if (data.length) {
-                this.resultsDiv.innerHTML = `
-                <h2 class="search-overlay__section-title">General Information</h2>
-                <ul class="link-list min-list">
-                    ${data.map((item) => `<li><a href="${item.link}">${item.title.rendered}</a></li>`).join('')}
-                </ul>
-            `;
-            } else {
-                this.resultsDiv.innerHTML = `
-                <h2 class="search-overlay__section-title">General Information</h2>
-                <p>No general information matches that search.</p>
-                `;
-            }
-        } catch (error) {
-            console.error(error);
-        }
+        const postsUrl = `${universityData.root_url}/wp-json/wp/v2/posts?search=${encodeURIComponent(searchTerm)}`;
+        const pagesUrl = `${universityData.root_url}/wp-json/wp/v2/pages?search=${encodeURIComponent(searchTerm)}`;
 
-        this.isSpinnerVisible = false;
+        Promise.all([axios.get(postsUrl), axios.get(pagesUrl)])
+            .then(([posts, pages]) => {
+                const combinedResults = posts.data.concat(pages.data);
+                this.resultsDiv.innerHTML = `<h2 class="search-overlay__section-title">General Information</h2>
+            ${combinedResults.length ? '<ul class="link-list min-list">' : '<p>No general information matches that search.</p>'}
+            ${combinedResults.map((item) => `<li><a href="${item.link}">${item.title.rendered}</a></li>`).join('')}
+            ${combinedResults.length ? '</ul>' : ''}`;
+                this.isSpinnerVisible = false;
+            })
+            .catch(() => {
+                this.resultsDiv.innerHTML = '<p>Unexpected error; please try again.</p>';
+                this.isSpinnerVisible = false;
+            });
     }
 
     openOverlay() {
