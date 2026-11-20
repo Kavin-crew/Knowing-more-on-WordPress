@@ -170,13 +170,22 @@ class Search {
       }
     }
   }
-  getReults() {
-    this.resultsDiv.innerHTML = `
-        <div class="search-result">
-            <h3>Test Result</h3>
-            <p>Some description here.</p>
-        </div>
-    `;
+  async getReults() {
+    const searchedValue = this.searchField.value;
+    try {
+      const response = await fetch(`http://localhost:3000/wp-json/wp/v2/location?search=${encodeURIComponent(searchedValue)}`);
+      const data = await response.json();
+      if (data.length) {
+        this.resultsDiv.innerHTML = `
+                <h2 class="search-overlay__section-title">General Information</h2>
+                <ul class="link-list min-list">
+                    ${data.map(item => `<li><a href="${item.link}">${item.title.rendered}</a></li>`).join('')}
+                </ul>
+            `;
+      }
+    } catch (error) {
+      console.error(error);
+    }
     this.isSpinnerVisible = false;
   }
   openOverlay() {
