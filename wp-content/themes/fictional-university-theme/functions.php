@@ -1,8 +1,22 @@
 <?php
 
 ////////////////////////////////////
+// Add new custom field in results of rest api request
+////////////////////////////////////
+
+function university_custom_rest(){
+    register_rest_field('post', 'authorName', array(
+        'get_callback' => function (){
+            return get_the_author();
+        }
+    ));
+}
+add_action('rest_api_init','university_custom_rest');
+
+////////////////////////////////////
 // Reusable page banner function
 ////////////////////////////////////
+
 function pageBanner($args = null)
 {
     // if the title is not set, then use page title
@@ -42,6 +56,7 @@ function pageBanner($args = null)
 ////////////////////////////////////
 // Load scripts, stylesheets, and fonts
 ////////////////////////////////////
+
 function university_files()
 {
     // add the style.css to the list of files from university_files
@@ -65,6 +80,7 @@ add_action('wp_enqueue_scripts', 'university_files');
 ////////////////////////////////////
 // Enable adding page title in address bar of the browser
 ////////////////////////////////////
+
 function university_features()
 {
     add_theme_support('title-tag');
@@ -79,6 +95,10 @@ function university_features()
     register_nav_menu('FooterLearnMenuLocation', 'Footer Learn Menu');
 }
 add_action('after_setup_theme', 'university_features');
+
+////////////////////////////////////
+// Adjusting queries
+////////////////////////////////////
 
 function university_adjust_queries($query)
 {
@@ -112,6 +132,7 @@ add_action('pre_get_posts', 'university_adjust_queries');
 ////////////////////////////////////
 // Leaflet metabox
 ////////////////////////////////////
+
 function add_location_map_metabox()
 {
     add_meta_box(

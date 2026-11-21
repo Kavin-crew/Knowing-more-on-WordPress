@@ -63,6 +63,7 @@ wp_localize_script('main-university-js', 'universityData', array(
 ////////////////////////////////////
 // Add new CPT
 ////////////////////////////////////
+
 function university_post_types()
 {
     register_post_type('event', array(
@@ -103,3 +104,22 @@ function university_adjust_queries($query)
     }
 }
 add_action('pre_get_posts', 'university_adjust_queries');
+
+////////////////////////////////////
+// Add new custom field in results of rest api request
+////////////////////////////////////
+
+function university_custom_rest(){
+    // arguments
+    // 1. the desired post type, example post, event, program and so on
+    // 2. they property name or the key name
+    // 3. array for getting the value
+    // result below:
+    // "authorName": "Super amazing author name"
+    register_rest_field('post', 'authorName', array(
+        'get_callback' => function (){
+            return 'Super amazing author name';
+        }
+    ));
+}
+add_action('rest_api_init','university_custom_rest');
